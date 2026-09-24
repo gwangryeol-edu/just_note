@@ -1,22 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
+import { AppShell, CenterColumn, DetailColumn } from './layout/AppShell.jsx'
+import { OrbitList, SLOT_COUNT } from './orbit/OrbitList.jsx'
+import { useOrbitWindow } from './orbit/useOrbitWindow.js'
 import './list-default.css'
-
-const SLOT_COUNT = 10
-const SCROLL_STEP = 80
-
-/** 9시 방향부터 시계 방향. 프레임 500×500 기준 좌표. */
-const ORBIT_SLOTS = [
-  { left: 58, top: 228 },
-  { left: 90, top: 128 },
-  { left: 175, top: 66 },
-  { left: 281, top: 66 },
-  { left: 366, top: 128 },
-  { left: 398, top: 228 },
-  { left: 366, top: 328 },
-  { left: 281, top: 390 },
-  { left: 175, top: 390 },
-  { left: 90, top: 328 },
-]
 
 const NOTES = [
   {
@@ -130,106 +116,27 @@ function formatAbsolute(date) {
 }
 
 function NoteList() {
-  const [windowStart, setWindowStart] = useState(0)
   const [selectedId, setSelectedId] = useState(null)
-  const centerRef = useRef(null)
-  const wheelAccum = useRef(0)
-  const windowStartRef = useRef(0)
-  const maxStart = Math.max(0, NOTES.length - SLOT_COUNT)
-
-  useEffect(() => {
-    const center = centerRef.current
-    if (!center) return undefined
-
-    const onWheel = (event) => {
-      event.preventDefault()
-      wheelAccum.current += event.deltaY
-
-      let next = windowStartRef.current
-      while (wheelAccum.current >= SCROLL_STEP && next < maxStart) {
-        wheelAccum.current -= SCROLL_STEP
-        next += 1
-      }
-      while (wheelAccum.current <= -SCROLL_STEP && next > 0) {
-        wheelAccum.current += SCROLL_STEP
-        next -= 1
-      }
-      if (next === windowStartRef.current) {
-        wheelAccum.current = Math.max(
-          -SCROLL_STEP,
-          Math.min(SCROLL_STEP, wheelAccum.current),
-        )
-        return
-      }
-      windowStartRef.current = next
-      setWindowStart(next)
-    }
-
-    center.addEventListener('wheel', onWheel, { passive: false })
-    return () => center.removeEventListener('wheel', onWheel)
-  }, [maxStart])
-
+  const { windowStart, centerRef, resetWindow } = useOrbitWindow(NOTES.length)
   const visibleNotes = NOTES.slice(windowStart, windowStart + SLOT_COUNT)
   const selected = NOTES.find((note) => note.id === selectedId) ?? null
 
   const resetList = () => {
-    windowStartRef.current = 0
-    wheelAccum.current = 0
-    setWindowStart(0)
+    resetWindow()
     setSelectedId(null)
   }
 
   return (
-    <div className="note-list">
-      <aside className="note-list-nav">
-        <p className="note-list-brand">jn.</p>
-        <nav className="note-list-nav-list" aria-label="primary">
-          <button
-            type="button"
-            className="note-list-nav-item is-active"
-            aria-current="page"
-            onClick={resetList}
-          >
-            list
-          </button>
-          <button type="button" className="note-list-nav-item">
-            create
-          </button>
-          <button type="button" className="note-list-nav-item">
-            find
-          </button>
-        </nav>
-      </aside>
+    <AppShell active="list" onSelect={{ list: resetList }}>
+      <CenterColumn columnRef={centerRef}>
+        <OrbitList
+          notes={visibleNotes}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
+        />
+      </CenterColumn>
 
-      <section
-        ref={centerRef}
-        className="note-list-center"
-        aria-label="note list"
-      >
-        <div className="note-list-orbit">
-          <p className="note-list-mark">just note</p>
-          {ORBIT_SLOTS.map((slot, index) => {
-            const note = visibleNotes[index]
-            if (!note) return null
-            const letter = Array.from(note.title)[0]
-            return (
-              <button
-                key={slot.left + '-' + slot.top}
-                type="button"
-                className="note-list-orbit-box"
-                style={{ left: slot.left, top: slot.top }}
-                aria-pressed={selectedId === note.id}
-                aria-label={note.title}
-                onClick={() => setSelectedId(note.id)}
-              >
-                {letter}
-              </button>
-            )
-          })}
-        </div>
-      </section>
-
-      <aside className="note-list-detail" aria-label="note detail">
+      <DetailColumn label="note detail">
         {selected ? (
           <article className="note-list-article">
             <h1 className="note-list-title">{selected.title}</h1>
@@ -249,8 +156,8 @@ function NoteList() {
             <span className="note-list-rule" />
           </div>
         )}
-      </aside>
-    </div>
+      </DetailColumn>
+    </AppShell>
   )
 }
 

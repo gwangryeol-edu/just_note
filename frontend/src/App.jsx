@@ -1,7 +1,7 @@
-import FindResultDetail from './components/find-result-detail.jsx'
+import NoteApp from './components/NoteApp.jsx'
 
 function App() {
-  return <FindResultDetail />
+  return <NoteApp />
 }
 
 export default App

@@ -1,0 +1,59 @@
+.note-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  width: 400px;
+  text-align: left;
+}
+
+.note-detail-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+.note-detail-title {
+  margin: 0;
+  width: 100%;
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 42px;
+  color: #111;
+}
+
+.note-detail-author {
+  margin: 0;
+  font-family: Geist, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 17px;
+  color: #767676;
+}
+
+.note-detail-line {
+  position: relative;
+  width: 400px;
+  height: 0;
+}
+
+.note-detail-line img {
+  position: absolute;
+  left: 0;
+  top: -1px;
+  display: block;
+}
+
+.note-detail-body {
+  margin: 0;
+  width: 100%;
+  font-family: Geist, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #111;
+}

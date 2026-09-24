@@ -1,0 +1,51 @@
+.orbit {
+  position: relative;
+  width: 500px;
+  height: 500px;
+  flex-shrink: 0;
+}
+
+.orbit-mark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  font-family: 'Instrument Serif', serif;
+  font-size: 36px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 47px;
+  color: #111;
+  text-align: center;
+  pointer-events: none;
+}
+
+.orbit-box {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  background: #fff;
+  font-family: Geist, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  color: #767676;
+  cursor: pointer;
+}
+
+.orbit-box.is-selected {
+  border-color: #111;
+  background: #fafafa;
+  font-weight: 600;
+  color: #111;
+}

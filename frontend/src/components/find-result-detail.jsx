@@ -1,20 +1,8 @@
 import { useState } from 'react'
-import detailLine from '../assets/find-result-detail-line.svg'
+import { AppShell, CenterColumn, DetailColumn } from './layout/AppShell.jsx'
+import { NoteDetail } from './note/NoteDetail.jsx'
+import { OrbitList } from './orbit/OrbitList.jsx'
 import './find-result-detail.css'
-
-/** 9시 방향부터 시계 방향. 프레임 500×500 기준 좌표. */
-const ORBIT_SLOTS = [
-  { left: 58, top: 228 },
-  { left: 90, top: 128 },
-  { left: 175, top: 66 },
-  { left: 281, top: 66 },
-  { left: 366, top: 128 },
-  { left: 398, top: 228 },
-  { left: 366, top: 328 },
-  { left: 281, top: 390 },
-  { left: 175, top: 390 },
-  { left: 90, top: 328 },
-]
 
 const INITIAL_RESULTS = [
   {
@@ -59,7 +47,7 @@ function FindResultDetail() {
   const onDelete = () => {
     if (!selected) return
     const confirmed = window.confirm(
-      `『${selected.title}』 note를 정말 삭제하시겠습니까`,
+      `Are you sure you want to delete the note "${selected.title}"?`,
     )
     if (!confirmed) return
     const next = results.filter((note) => note.id !== selected.id)
@@ -68,73 +56,20 @@ function FindResultDetail() {
   }
 
   return (
-    <div className="find-result-detail">
-      <aside className="find-result-detail-nav">
-        <p className="find-result-detail-brand">jn.</p>
-        <nav className="find-result-detail-nav-list" aria-label="primary">
-          <button type="button" className="find-result-detail-nav-item">
-            list
-          </button>
-          <button type="button" className="find-result-detail-nav-item">
-            create
-          </button>
-          <button
-            type="button"
-            className="find-result-detail-nav-item is-active"
-            aria-current="page"
-          >
-            find
-          </button>
-        </nav>
-      </aside>
-
-      <section className="find-result-detail-center" aria-label="search results">
-        <div className="find-result-detail-orbit">
-          <p className="find-result-detail-mark">just note</p>
-          {ORBIT_SLOTS.map((slot, index) => {
-            const note = results.find((item) => item.slot === index)
-            if (!note) return null
-            const isSelected = selectedId === note.id
-            return (
-              <button
-                key={note.id}
-                type="button"
-                className={
-                  isSelected
-                    ? 'find-result-detail-orbit-box is-selected'
-                    : 'find-result-detail-orbit-box'
-                }
-                style={{ left: slot.left, top: slot.top }}
-                aria-pressed={isSelected}
-                aria-label={note.title}
-                onClick={() => setSelectedId(note.id)}
-              >
-                {Array.from(note.title)[0]}
-              </button>
-            )
-          })}
-        </div>
+    <AppShell active="find">
+      <CenterColumn layout="stack" label="search results">
+        <OrbitList
+          notes={results}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
+        />
         <p className="find-result-detail-count">
           Showing {results.length} search results for user
         </p>
-      </section>
-
-      <aside className="find-result-detail-panel" aria-label="note detail">
+      </CenterColumn>
+      <DetailColumn label="note detail">
         <div className="find-result-detail-frame">
-          {selected ? (
-            <article className="find-result-detail-article">
-              <div className="find-result-detail-heading">
-                <h1 className="find-result-detail-title">{selected.title}</h1>
-                <p className="find-result-detail-author">by {selected.author}</p>
-              </div>
-              <div className="find-result-detail-line-slot">
-                <img src={detailLine} alt="" width="400" height="1" />
-              </div>
-              <p className="find-result-detail-body">{selected.content}</p>
-            </article>
-          ) : (
-            <div />
-          )}
+          <NoteDetail note={selected} />
           {selected ? (
             <div className="find-result-detail-actions">
               <button type="button" className="find-result-detail-action">
@@ -150,8 +85,8 @@ function FindResultDetail() {
             </div>
           ) : null}
         </div>
-      </aside>
-    </div>
+      </DetailColumn>
+    </AppShell>
   )
 }
 
